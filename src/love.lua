@@ -203,6 +203,8 @@ local cursors = {
     [C.ImGuiMouseCursor_NotAllowed] = love.mouse.getSystemCursor("no"),
 }
 
+local _cursor
+local _WantCaptureMouse = false
 function L.RenderDrawLists()
     -- Avoid rendering when minimized
     if io.DisplaySize.x == 0 or io.DisplaySize.y == 0 or not love.window.isVisible() then return end
@@ -219,7 +221,20 @@ function L.RenderDrawLists()
             love.mouse.setVisible(false) -- Hide OS mouse cursor if ImGui is drawing it
         else
             love.mouse.setVisible(true)
-            love.mouse.setCursor(cursor)
+            if not _cursor then
+                _cursor = cursor
+            elseif _cursor ~= cursor then
+                _cursor = cursor
+                love.mouse.setCursor(cursor)
+            end
+        end
+    end
+
+    local WantCaptureMouse = L.GetWantCaptureMouse()
+    if _WantCaptureMouse ~= WantCaptureMouse and _cursor then
+        _WantCaptureMouse = WantCaptureMouse
+        if _WantCaptureMouse then
+            love.mouse.setCursor(_cursor)
         end
     end
 
