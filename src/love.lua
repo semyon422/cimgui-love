@@ -132,6 +132,16 @@ local lovekeymap = {
     ["ralt"] = {C.ImGuiKey_RightAlt, C.ImGuiKey_ModAlt},
     ["rgui"] = {C.ImGuiKey_RightSuper, C.ImGuiKey_ModSuper},
 }
+for k, v in pairs(lovekeymap) do
+	if type(v) == "table" then
+		for kk, vv in pairs(v) do
+			lovekeymap[vv] = kk
+		end
+	else
+		lovekeymap[v] = k
+	end
+end
+L.keymap = lovekeymap
 _common.lovekeymap = lovekeymap
 
 local textureObject
