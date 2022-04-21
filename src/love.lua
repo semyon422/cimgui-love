@@ -385,6 +385,16 @@ local gamepad_map = {
     rightx = {C.ImGuiKey_GamepadRStickLeft, C.ImGuiKey_GamepadRStickRight},
     righty = {C.ImGuiKey_GamepadRStickUp, C.ImGuiKey_GamepadRStickDown},
 }
+for k, v in pairs(gamepad_map) do
+	if type(v) == "table" then
+		for kk, vv in pairs(v) do
+			gamepad_map[vv] = kk
+		end
+	else
+		gamepad_map[v] = k
+	end
+end
+L.gamepad_map = gamepad_map
 
 function L.GamepadPressed(button)
     io:AddKeyEvent(gamepad_map[button] or C.ImGuiKey_None, true)
