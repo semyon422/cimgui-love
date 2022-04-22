@@ -132,7 +132,11 @@ local lovekeymap = {
     ["ralt"] = {C.ImGuiKey_RightAlt, C.ImGuiKey_ModAlt},
     ["rgui"] = {C.ImGuiKey_RightSuper, C.ImGuiKey_ModSuper},
 }
+local lovekeymap_keys = {}
 for k, v in pairs(lovekeymap) do
+	lovekeymap_keys[k] = v
+end
+for k, v in pairs(lovekeymap_keys) do
 	if type(v) == "table" then
 		lovekeymap[v[1]] = k
 	else
@@ -383,7 +387,11 @@ local gamepad_map = {
     rightx = {C.ImGuiKey_GamepadRStickLeft, C.ImGuiKey_GamepadRStickRight},
     righty = {C.ImGuiKey_GamepadRStickUp, C.ImGuiKey_GamepadRStickDown},
 }
+local gamepad_map_keys = {}
 for k, v in pairs(gamepad_map) do
+	gamepad_map_keys[k] = v
+end
+for k, v in pairs(gamepad_map_keys) do
 	if type(v) == "table" then
 		gamepad_map[v[1]] = k
 	else
