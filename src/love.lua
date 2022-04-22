@@ -215,6 +215,9 @@ local cursors = {
     [C.ImGuiMouseCursor_NotAllowed] = love.mouse.getSystemCursor("no"),
 }
 
+local meshdataBytes = 0
+local meshdata
+
 local _cursor
 local _WantCaptureMouse = false
 function L.RenderDrawLists()
@@ -253,7 +256,11 @@ function L.RenderDrawLists()
     for i = 0, data.CmdListsCount - 1 do
         local cmd_list = data.CmdLists[i]
         local VtxSize = cmd_list.VtxBuffer.Size*ffi.sizeof("ImDrawVert")
-        local meshdata = love.image.newImageData(VtxSize/4, 1)
+        if VtxSize > meshdataBytes then
+            meshdataBytes = VtxSize
+            meshdata = nil
+        end
+        meshdata = meshdata or love.image.newImageData(meshdataBytes / 4, 1)
         ffi.copy(meshdata:getFFIPointer(), cmd_list.VtxBuffer.Data, VtxSize)
         local mesh = love.graphics.newMesh(vertexformat, meshdata, "triangles", "static")
 
@@ -291,6 +298,7 @@ function L.RenderDrawLists()
                 love.graphics.setBlendMode("alpha")
             end
         end
+        mesh:release()
     end
     love.graphics.setScissor()
     love.graphics.setBlendMode(mode, alphamode)
