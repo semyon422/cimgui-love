@@ -134,9 +134,7 @@ local lovekeymap = {
 }
 for k, v in pairs(lovekeymap) do
 	if type(v) == "table" then
-		for kk, vv in pairs(v) do
-			lovekeymap[vv] = kk
-		end
+		lovekeymap[v[1]] = k
 	else
 		lovekeymap[v] = k
 	end
@@ -387,9 +385,7 @@ local gamepad_map = {
 }
 for k, v in pairs(gamepad_map) do
 	if type(v) == "table" then
-		for kk, vv in pairs(v) do
-			gamepad_map[vv] = kk
-		end
+		gamepad_map[v[1]] = k
 	else
 		gamepad_map[v] = k
 	end
