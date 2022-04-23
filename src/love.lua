@@ -303,7 +303,6 @@ function L.RenderDrawLists()
                 love.graphics.draw(mesh)
             end
         end
-        mesh:release()
     end
     love.graphics.pop()
 end
