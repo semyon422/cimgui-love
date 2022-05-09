@@ -190,8 +190,11 @@ function L.BuildFontAtlas()
     textureObject = love.graphics.newImage(imgdata)
 end
 
-function L.Update(dt)
-    io.DisplaySize.x, io.DisplaySize.y = love.graphics.getDimensions()
+function L.Update(dt, w, h)
+	if not w then
+		w, h = love.graphics.getDimensions()
+	end
+    io.DisplaySize.x, io.DisplaySize.y = w, h
     io.DeltaTime = dt
 
     if io.WantSetMousePos then
@@ -214,6 +217,17 @@ local cursors = {
     [C.ImGuiMouseCursor_Hand] = love.mouse.getSystemCursor("hand"),
     [C.ImGuiMouseCursor_NotAllowed] = love.mouse.getSystemCursor("no"),
 }
+
+local Clip = {
+	x = 0,
+	y = 0,
+	w = 0,
+	h = 0,
+}
+local function drawStencil()
+	love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.rectangle("fill", Clip.x, Clip.y, Clip.w, Clip.h)
+end
 
 local mesh, meshdata
 local max_vertexcount = -math.huge
@@ -279,10 +293,6 @@ function L.RenderDrawLists()
         for k = 0, cmd_list.CmdBuffer.Size - 1 do
             local cmd = cmd_list.CmdBuffer.Data[k]
             if cmd.ElemCount > 0 then
-                local clipX, clipY = cmd.ClipRect.x, cmd.ClipRect.y
-                local clipW = cmd.ClipRect.z - clipX
-                local clipH = cmd.ClipRect.w - clipY
-
                 love.graphics.setBlendMode("alpha", "alphamultiply")
 
                 local texture_id = C.ImDrawCmd_GetTexID(cmd)
@@ -298,9 +308,17 @@ function L.RenderDrawLists()
                     mesh:setTexture(textureObject)
                 end
 
-                love.graphics.setScissor(clipX, clipY, clipW, clipH)
+                Clip.x, Clip.y = cmd.ClipRect.x, cmd.ClipRect.y
+                Clip.w = cmd.ClipRect.z - Clip.x
+                Clip.h = cmd.ClipRect.w - Clip.y
+
+				love.graphics.stencil(drawStencil, "replace", 1, false)
+				love.graphics.setStencilTest("greater", 0)
+
                 mesh:setDrawRange(cmd.IdxOffset + 1, cmd.ElemCount)
                 love.graphics.draw(mesh)
+
+				love.graphics.setStencilTest()
             end
         end
     end
